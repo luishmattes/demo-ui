@@ -23,5 +23,3 @@ jobs:
     
     - name: Push Docker Image
       run: docker push ${{secrets.DH_USER}}/${{secrets.DH_REPO}}:${{github.sha}}
-@luishmattes
-Comment
