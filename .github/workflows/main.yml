@@ -23,3 +23,29 @@ jobs:
     
     - name: Push Docker Image
       run: docker push ${{secrets.DH_USER}}/${{secrets.DH_REPO}}:${{github.sha}}
+  publish:
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+        name: Repository Deployment Image
+        with:
+          repository: 'luishmattes/k8s-apps'
+          token: ${{secrets.GH_TOKEN}}
+
+      - name: Update Deployment Image
+        run: |
+          git config user.email ${{secrets.GH_EMAIL}}
+          git config user.name ${{secrets.GH_NAME}}
+          pwd
+          cd demo-ui
+          cat deployment.yaml
+          pwd
+          sed -i "s+luishmattes/demo-ui.*+luishmattes/demo-ui:${{github.sha}}+g" deployment.yaml
+          cat deployment.yaml
+          git add .
+          git commit -m 'Update Deployment Image'
+          git push origin main
